@@ -5,6 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import conversation_logic as logic
 import constants as K
+processing = False
 
 st.set_page_config(
      page_title = K.TAB_PAGE_TITLE,
@@ -30,7 +31,8 @@ if message_list != []:
     for message in message_list:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-    clear_history = st.button("会話履歴を消去", on_click=clear_conversation)
+    if processing == False:
+        clear_history = st.button("会話履歴を消去", on_click=clear_conversation)
 
 
 # Accept user input
@@ -61,9 +63,11 @@ st.markdown("""
 )
 
 with st.sidebar:
+    processing = True
     st.write(K.SIDEBAR_WRITE)
     with st.container():
         if 'retrived_text' in st.session_state:
             st.markdown(st.session_state['retrived_text'])
+    processing = False
 
 

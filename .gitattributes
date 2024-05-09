@@ -1,2 +1,2 @@
-data_en.chroma_db filter=lfs diff=lfs merge=lfs -text
+data_en.chroma_db/ filter=lfs diff=lfs merge=lfs -text
 data_ja.chroma_db/ filter=lfs diff=lfs merge=lfs -text

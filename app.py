@@ -2,7 +2,6 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-
 import streamlit as st
 import conversation_logic as logic
 import constants as K
@@ -28,8 +27,13 @@ if messages != []:
     for message in messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
+# else:
+#     st.write('会話がリセットされました')
 
-documents = []
+# if st.button(K.CLEAR_BUTTON, key='my_button'):
+#     logic.clear_conversation()
+#     st.rerun()
+
 # Accept user input
 if prompt := st.chat_input(K.HOLDER):
     # Display user message in chat message container
@@ -40,14 +44,14 @@ if prompt := st.chat_input(K.HOLDER):
 
 # Inject custom CSS to set the width of the sidebar
 # st.markdown(
-    # """
-    # <style>
-    #     section[data-testid="stSidebar"] {
-    #         width: 500px !important; # Set the width to your desired value
-    #     }
-    # </style>
-    # """,
-    # unsafe_allow_html=True,
+#     """
+#     <style>
+#         section[data-testid="stSidebar"] {
+#             width: 500px !important; # Set the width to your desired value
+#         }
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
 # )
 
 with st.sidebar:

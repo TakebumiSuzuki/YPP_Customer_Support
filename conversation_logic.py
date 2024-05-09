@@ -116,6 +116,9 @@ def invoke(inputText):
 
     return textData
 
+def clear_conversation():
+    store == {}
+
 
 
 

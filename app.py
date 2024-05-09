@@ -5,7 +5,6 @@
 import streamlit as st
 import conversation_logic as logic
 import constants as K
-print(st.session_state)
 
 st.set_page_config(
      page_title = K.TAB_PAGE_TITLE,
@@ -16,7 +15,7 @@ st.set_page_config(
 
 st.title(K.TITLE)
 st.write(K.WRITE)
-
+print(st.session_state)
 if "store" not in st.session_state:
     st.session_state["store"] = {}
 message_list = logic.get_messages(st.session_state["store"])
@@ -52,7 +51,6 @@ if prompt := st.chat_input(K.HOLDER):
 
 with st.sidebar:
     st.write(K.SIDEBAR_WRITE)
-    st.divider()
     with st.container():
         if 'retrived_text' in st.session_state:
             st.markdown(st.session_state['retrived_text'])

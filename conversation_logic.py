@@ -61,11 +61,8 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
-
 # ### Statefully manage chat history ###
 # store = {}
-
-
 
 def invoke(inputText, store):
 
@@ -98,8 +95,8 @@ from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.messages.human import HumanMessage
 from langchain_core.messages.ai import AIMessage
 def get_messages(store):
-    if  'abc123' in store and 'messages' in store['abc123']:
-        messages = store['abc123']['messages']
+    if  'abc123' in store:
+        messages = store['abc123'].messages
         message_list = []
         for message in messages:
             if type(message) is HumanMessage:

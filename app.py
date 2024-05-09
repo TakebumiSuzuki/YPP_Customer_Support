@@ -1,6 +1,6 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# __import__('pysqlite3')
+# import sys
+# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import streamlit as st
 import conversation_logic as logic
@@ -17,29 +17,25 @@ st.set_page_config(
 st.title(K.TITLE)
 st.write(K.WRITE)
 
-# st.session_state.store = logic.store
-messages = logic.get_messages()
+if "store" not in st.session_state:
+    st.session_state["store"] = {}
+message_list = logic.get_messages(st.session_state["store"])
+
 
 # with st.chat_message("AI"):
 #             st.markdown('ご質問をどうぞ')
 # Display chat messages from history on app rerun
-if messages != []:
-    for message in messages:
+if message_list != []:
+    for message in message_list:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-# else:
-#     st.write('会話がリセットされました')
-
-# if st.button(K.CLEAR_BUTTON, key='my_button'):
-#     logic.clear_conversation()
-#     st.rerun()
 
 # Accept user input
 if prompt := st.chat_input(K.HOLDER):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state['retrived_text'] = logic.invoke(prompt)
+    st.session_state['retrived_text'] = logic.invoke(prompt, st.session_state["store"])
     st.rerun()
 
 # Inject custom CSS to set the width of the sidebar

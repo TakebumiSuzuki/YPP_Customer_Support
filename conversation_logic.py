@@ -12,7 +12,6 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-print('ライブラリ読み込み中')
 load_dotenv()
 llm = ChatOpenAI(
     model= K.LLM_MODEL_NAME,
@@ -63,41 +62,26 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
 
-### Statefully manage chat history ###
-store = {}
+# ### Statefully manage chat history ###
+# store = {}
 
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
 
-conversational_rag_chain = RunnableWithMessageHistory(
-    rag_chain,
-    get_session_history,
-    input_messages_key="input",
-    history_messages_key="chat_history",
-    output_messages_key="answer",
-)
 
-from langchain_core.chat_history import InMemoryChatMessageHistory
-from langchain_core.messages.human import HumanMessage
-from langchain_core.messages.ai import AIMessage
-def get_messages():
-    if store == {}:
-        return []
+def invoke(inputText, store):
 
-    messages = store['abc123'].messages
-    message_list = []
-    for message in messages:
-        if type(message) is HumanMessage:
-            text = message.content
-            message_list.append({'role' : 'AI', 'content' : text} )
-        if type(message) is AIMessage:
-            text = message.content
-            message_list.append({'role' : 'You', 'content' : text} )
-    return message_list
+    def get_session_history(session_id: str) -> BaseChatMessageHistory:
+        if session_id not in store:
+            store[session_id] = ChatMessageHistory()
+        return store[session_id]
 
-def invoke(inputText):
+    conversational_rag_chain = RunnableWithMessageHistory(
+        rag_chain,
+        get_session_history,
+        input_messages_key="input",
+        history_messages_key="chat_history",
+        output_messages_key="answer",
+    )
+
     response = conversational_rag_chain.invoke(
         {"input": inputText},
         config={"configurable": {"session_id": "abc123"}},  # constructs a key "abc123" in `store`.
@@ -107,14 +91,27 @@ def invoke(inputText):
     textData = ""
     for document in documents:
         text = document.page_content
-        textData += '\n\n' + text
-
-
-    # source_text = '\n\n'.join(contexts)
-    # print(type(source_text))
-    # print(len(source_text))
-
+        textData += '\n----------------------\n' + text
     return textData
+
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.messages.human import HumanMessage
+from langchain_core.messages.ai import AIMessage
+def get_messages(store):
+    if  'abc123' in store and 'messages' in store['abc123']:
+        messages = store['abc123']['messages']
+        message_list = []
+        for message in messages:
+            if type(message) is HumanMessage:
+                text = message.content
+                message_list.append({'role' : 'AI', 'content' : text} )
+            if type(message) is AIMessage:
+                text = message.content
+                message_list.append({'role' : 'You', 'content' : text} )
+    else:
+        message_list = []
+
+    return message_list
 
 def clear_conversation():
     store == {}

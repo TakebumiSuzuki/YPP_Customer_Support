@@ -61,8 +61,6 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
-# ### Statefully manage chat history ###
-# store = {}
 
 def invoke(inputText, store):
 
@@ -109,37 +107,6 @@ def get_messages(store):
         message_list = []
 
     return message_list
-
-def clear_conversation():
-    store == {}
-
-
-
-
-
-
-
-
-
-
-# apiResponse = conversational_rag_chain.invoke(
-#     {"input": "recommended speed needed to play the video?"},
-#     config={
-#         "configurable": {"session_id": "abc123"}
-#     },  # constructs a key "abc123" in `store`.
-# )
-
-# print(apiResponse["answer"])
-# print(store)
-
-
-# InMemoryChatMessageHistory(
-#     messages=[
-#         HumanMessage(content='recommended speed needed to play the video?'),
-#         AIMessage(content='The recommended sustained speeds needed to play videos on YouTube are as follows: 4K resolution requires 20 Mbps, HD 1080p requires 5 Mbps, HD 720p requires 2.5 Mbps, SD 480p requires 1.1 Mbps, and SD 360p requires 0.7 Mbps. You can check the resolution of the video you are trying to play and compare it to these recommended speeds to troubleshoot any playback issues.')
-#         ]
-# )
-
 
 
 

@@ -5,7 +5,6 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import conversation_logic as logic
 import constants as K
-processing = False
 
 st.set_page_config(
      page_title = K.TAB_PAGE_TITLE,
@@ -14,9 +13,13 @@ st.set_page_config(
      initial_sidebar_state = "expanded"
 )
 
-def clear_conversation():
-    st.session_state["store"] = {}
-    st.rerun()
+st.markdown("""
+    <style>
+        header {visibility: hidden;}
+        div[class^='block-container'] { padding-top: 1rem; }
+    </style>
+    """, unsafe_allow_html=True
+)
 
 st.title(K.TITLE)
 st.write(K.WRITE)
@@ -25,15 +28,18 @@ if "store" not in st.session_state:
     st.session_state["store"] = {}
 message_list = logic.get_messages(st.session_state["store"])
 
-
 # Display chat messages from history on app rerun
 if message_list != []:
     for message in message_list:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-    if processing == False:
-        clear_history = st.button("会話履歴を消去", on_click=clear_conversation)
 
+    clear_history = st.button("会話履歴を消去")
+    if clear_history == True:
+        st.session_state["store"] = {}
+        st.session_state['retrived_text'] = ""
+        clear_history = False
+        st.rerun()
 
 # Accept user input
 if prompt := st.chat_input(K.HOLDER):
@@ -43,31 +49,10 @@ if prompt := st.chat_input(K.HOLDER):
     st.session_state['retrived_text'] = logic.invoke(prompt, st.session_state["store"])
     st.rerun()
 
-# Inject custom CSS to set the width of the sidebar
-# st.markdown(
-#     """
-#     <style>
-#         section[data-testid="stSidebar"] {
-#             width: 500px !important; # Set the width to your desired value
-#         }
-#     </style>
-#     """,
-#     unsafe_allow_html=True,
-# )
-
-st.markdown("""
-    <style>
-        header {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True
-)
-
 with st.sidebar:
-    processing = True
     st.write(K.SIDEBAR_WRITE)
     with st.container():
         if 'retrived_text' in st.session_state:
             st.markdown(st.session_state['retrived_text'])
-    processing = False
 
 

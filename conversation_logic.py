@@ -31,8 +31,9 @@ vectorstore = Chroma(
 
 retriever = vectorstore.as_retriever(
         search_type = K.SEARCH_TYPE,
-        search_kwargs={'k': K.K, 'fetch_k': K.FETCH_K}
+        search_kwargs={'score_threshold': K.THRESH},
 )
+# 'k': K.K, 'fetch_k': K.FETCH_K,
 
 ### Contextualize question ###
 contextualize_q_system_prompt = K.CONTEXTURIZE_PROMPT
@@ -40,8 +41,8 @@ contextualize_q_system_prompt = K.CONTEXTURIZE_PROMPT
 contextualize_q_prompt = ChatPromptTemplate.from_messages([
         ("system", contextualize_q_system_prompt),
         MessagesPlaceholder("chat_history"),
-        ("human", "{input}")]
-)
+        ("human", "{input}")
+        ])
 
 history_aware_retriever = create_history_aware_retriever(
     llm, retriever, contextualize_q_prompt
@@ -63,7 +64,6 @@ rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chai
 
 
 def invoke(inputText, store):
-
     def get_session_history(session_id: str) -> BaseChatMessageHistory:
         if session_id not in store:
             store[session_id] = ChatMessageHistory()
@@ -86,10 +86,10 @@ def invoke(inputText, store):
     textData = ""
     for document in documents:
         text = document.page_content
-        textData += '\n----------------------\n' + text
+        textData += text + '\n---\n'
     return textData
 
-from langchain_core.chat_history import InMemoryChatMessageHistory
+# from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.messages.human import HumanMessage
 from langchain_core.messages.ai import AIMessage
 def get_messages(store):
@@ -103,6 +103,8 @@ def get_messages(store):
             if type(message) is AIMessage:
                 text = message.content
                 message_list.append({'role' : 'You', 'content' : text} )
+        if len(messages) > K.CHAT_HIST_NUM:
+            messages = messages[:K.CHAT_HIST_NUM]
     else:
         message_list = []
 

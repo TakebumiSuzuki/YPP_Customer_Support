@@ -1,6 +1,6 @@
-# __import__('pysqlite3')
-# import sys
-# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import streamlit as st
 import conversation_logic as logic
@@ -19,7 +19,6 @@ st.markdown("""
     <style>
         header {visibility: hidden;}
         div[class^='block-container'] { padding-top: 2rem; }
-        }
     </style>
     """, unsafe_allow_html=True
 )

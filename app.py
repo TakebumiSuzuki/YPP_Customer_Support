@@ -6,6 +6,8 @@ import streamlit as st
 import conversation_logic as logic
 import constants as K
 
+ss = st.session_state
+
 st.set_page_config(
      page_title = K.TAB_PAGE_TITLE,
      page_icon = K.TAB_PAGE_ICON,
@@ -24,9 +26,9 @@ st.markdown("""
 
 st.title(K.TITLE)
 st.write(K.WRITE)
-if "store" not in st.session_state:
-    st.session_state["store"] = {}
-message_list = logic.get_messages(st.session_state["store"])
+if "store" not in ss:
+    ss["store"] = {}
+message_list = logic.get_messages(ss["store"])
 
 # Display chat messages from history on app rerun
 if message_list != []:
@@ -34,29 +36,31 @@ if message_list != []:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    if "show_button" in st.session_state and st.session_state["show_button"] == True:
+    if "show_button" in ss and ss["show_button"] == True:
         clear_history = st.button("会話履歴を消去")
         if clear_history == True:
-            st.session_state["store"] = {}
-            st.session_state['retrived_text'] = ""
+            ss["store"] = {}
+            ss['retrived_text'] = ""
             clear_history = False
             st.rerun()
 
 def delete_button():
-    st.session_state["show_button"] = False
+    ss["show_button"] = False
 
 # Accept user input
 if prompt := st.chat_input(K.HOLDER, on_submit=delete_button):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state['retrived_text'] = logic.invoke(prompt, st.session_state["store"])
-    st.session_state["show_button"] = True
+    ss['retrived_text'] = logic.invoke(prompt, ss["store"], ss["mode"])
+    ss["show_button"] = True
     st.rerun()
 
 with st.sidebar:
-    with st.container():
-        if 'retrived_text' in st.session_state:
-            st.markdown(st.session_state['retrived_text'])
+    if "mode" not in ss: ss["mode"] = "sim"
+    selected_mode = st.radio(label = "Choose model", options = ["sim", "mmr"], horizontal = True)
+    ss["mode"] = selected_mode
+    if 'retrived_text' in ss:
+        st.markdown(ss['retrived_text'])
 
 

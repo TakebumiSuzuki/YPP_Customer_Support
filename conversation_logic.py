@@ -29,11 +29,22 @@ vectorstore = Chroma(
     embedding_function = embeddings_model
     )
 
+from langchain_core.runnables import ConfigurableField
 retriever = vectorstore.as_retriever(
-        search_type = K.SEARCH_TYPE,
-        search_kwargs={'score_threshold': K.THRESH},
-)
-# 'k': K.K, 'fetch_k': K.FETCH_K,
+        search_type = "similarity_score_threshold",
+        search_kwargs = {'k': K.K, 'score_threshold': K.THRESH},
+        ).configurable_alternatives(
+            ConfigurableField(id = 'retriever'),
+            default_key = "sim",
+            # This adds a new option, with name `openai` that is equal to `ChatOpenAI()`
+            mmr = Chroma(
+                persist_directory = K.VECSTORE_DIR,
+                embedding_function = embeddings_model
+                ).as_retriever(
+                    search_type = "mmr",
+                    search_kwargs={'k': K.K, 'fetch_k': K.FETCH_K}
+                    )
+            )
 
 ### Contextualize question ###
 contextualize_q_system_prompt = K.CONTEXTURIZE_PROMPT
@@ -63,7 +74,8 @@ question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
 
-def invoke(inputText, store):
+def invoke(inputText, store, mode):
+
     def get_session_history(session_id: str) -> BaseChatMessageHistory:
         if session_id not in store:
             store[session_id] = ChatMessageHistory()
@@ -77,7 +89,7 @@ def invoke(inputText, store):
         output_messages_key="answer",
     )
 
-    response = conversational_rag_chain.invoke(
+    response = conversational_rag_chain.with_config(configurable={"retriever": mode}).invoke(
         {"input": inputText},
         config={"configurable": {"session_id": "abc123"}},  # constructs a key "abc123" in `store`.
     )

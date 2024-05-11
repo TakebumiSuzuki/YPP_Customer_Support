@@ -12,10 +12,10 @@ LLM_API_KEY = 'OPENAI_API_KEY'
 EMBEDDING_API_KEY = 'OPENAI_API_KEY'
 EMBEDDING_MODEL_NAME = 'text-embedding-3-large'
 VECSTORE_DIR = 'data_ja.chroma_db'
-SEARCH_TYPE = 'similarity_score_threshold'
-K = 6
+# SEARCH_TYPE = 'similarity_score_threshold'
+K = 3
 FETCH_K = 15
-THRESH = 0.5
+THRESH = 0.42
 CHAT_HIST_NUM = 2
 
 CONTEXTURIZE_PROMPT = """Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed, and otherwise return it as is. Write in Japanese."""

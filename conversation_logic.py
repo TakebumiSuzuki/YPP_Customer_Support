@@ -4,13 +4,7 @@ from dotenv import load_dotenv
 from uuid import uuid4
 load_dotenv()
 
-unique_id = uuid4().hex[0:8]
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_PROJECT"] = f"Tracing Walkthrough - {unique_id}"
-os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
-os.environ["LANGCHAIN_API_KEY"] = os.getenv(K.LANGSMITH_API_KEY)
-from langsmith import Client
-client = Client()
+
 
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import ChatMessageHistory

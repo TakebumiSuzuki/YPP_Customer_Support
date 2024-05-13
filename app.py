@@ -19,7 +19,6 @@ st.markdown("""
     <style>
         header {visibility: hidden;}
         div[class^='block-container'] { padding-top: 2rem; }
-
     </style>
     """, unsafe_allow_html=True
 )
@@ -27,8 +26,8 @@ st.markdown("""
 st.title(K.TITLE)
 st.write(K.WRITE)
 if "store" not in ss:
-    ss["store"] = {}
-message_list = logic.get_messages(ss["store"])
+    ss["store"] = []
+message_list = ss["store"]
 
 # Display chat messages from history on app rerun
 if message_list != []:
@@ -39,7 +38,7 @@ if message_list != []:
     if "show_button" in ss and ss["show_button"] == True:
         clear_history = st.button("会話履歴を消去")
         if clear_history == True:
-            ss["store"] = {}
+            ss["store"] = []
             ss['retrived_text'] = ""
             clear_history = False
             st.rerun()
@@ -57,7 +56,8 @@ if prompt := st.chat_input(K.HOLDER, on_submit=delete_button):
     st.rerun()
 
 with st.sidebar:
-    if "mode" not in ss: ss["mode"] = "sim"
+    if "mode" not in ss:
+        ss["mode"] = "sim"
     selected_mode = st.radio(label = "Choose model", options = ["sim", "mmr"], horizontal = True)
     ss["mode"] = selected_mode
     if 'retrived_text' in ss:

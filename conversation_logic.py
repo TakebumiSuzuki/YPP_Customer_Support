@@ -36,11 +36,13 @@ compressor = CohereRerank(
     cohere_api_key = os.getenv(K.COHERE_API_KEY)
 )
 
-llm = ChatOpenAI(
-    model= K.LLM_MODEL_NAME,
-    temperature= K.LLM_TEMPERATURE,
-    api_key=os.getenv(K.LLM_API_KEY)
-    )
+from langchain_openai import OpenAI
+llm = OpenAI(model_name="gpt-3.5-turbo-instruct")
+# llm = ChatOpenAI(
+#     model= K.LLM_MODEL_NAME,
+#     temperature= K.LLM_TEMPERATURE,
+#     api_key=os.getenv(K.LLM_API_KEY)
+#     )
 
 embeddings_model = OpenAIEmbeddings(
     model = K.EMBEDDING_MODEL_NAME,

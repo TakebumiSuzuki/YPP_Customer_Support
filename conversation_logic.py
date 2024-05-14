@@ -12,6 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 import cohere
+from langchain_google_genai import GoogleGenerativeAI
 
 co = cohere.Client(
     os.getenv(K.COHERE_API_KEY)
@@ -20,17 +21,33 @@ co = cohere.Client(
 embeddings_model = OpenAIEmbeddings(
     model = K.EMBEDDING_MODEL_NAME,
     api_key = os.getenv(K.OPENAI_API_KEY)
-    )
+)
 
-from langchain_google_genai import GoogleGenerativeAI
-llm = GoogleGenerativeAI(model=K.GEMINI_MODEL_NAME, google_api_key=os.getenv(K.GEMINI_API_KEY))
+llm = GoogleGenerativeAI(
+    model = K.GEMINI_MODEL_NAME,
+    google_api_key = os.getenv(K.GEMINI_API_KEY)
+)
+
+vectorstore = Chroma(
+    persist_directory = (
+        K.EN_VECSTORE if K.lang == "EN" else
+        K.JA_VECSTORE
+    ),
+    embedding_function = embeddings_model
+)
+
+retriever = vectorstore.as_retriever(
+    search_type = K.SEARCH_TYPE,
+    search_kwargs = {'k': K.K, 'score_threshold': K.THRESH},
+)
 
 
-def invoke(inputText, store, lang):
+
+def invoke(inputText, store):
     language = (
-        "English" if lang == "EN" else
+        "English" if K.lang == "EN" else
         "Japanese"
-        )
+    )
 
     response = co.chat(
         model = K.COHERE_MODEL_NAME,
@@ -43,19 +60,6 @@ def invoke(inputText, store, lang):
     print("\n-------------\n")
     print(query)
     print("\n-------------\n")
-
-    vectorstore = Chroma(
-        persist_directory = (
-            K.EN_VECSTORE if lang == "EN" else
-            K.JA_VECSTORE
-        ),
-        embedding_function = embeddings_model
-    )
-
-    retriever = vectorstore.as_retriever(
-        search_type = K.SEARCH_TYPE,
-        search_kwargs = {'k': K.K, 'score_threshold': K.THRESH},
-    )
 
     docs = retriever.invoke(query)
     for i in range(len(docs)):

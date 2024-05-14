@@ -1,4 +1,7 @@
 
+lang = "JA"
+# or "EN"
+
 TAB_ICON = None
 
 def TAB_TITLE(l):
@@ -29,6 +32,12 @@ def CLEAR_BUTTON(l):
     return (
         'Clear' if l == "EN" else
         '会話をクリア'
+    )
+
+def SIDEBAR_SUBTITLE(l):
+    return (
+        '' if l == "EN" else
+        '[ 情報ソース ]'
     )
 
 

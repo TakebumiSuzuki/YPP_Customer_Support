@@ -1,13 +1,13 @@
 
 lang = "JA"
-# or "EN"
+# "JA" or "EN"
 
 TAB_ICON = None
 
 def TAB_TITLE(l):
     return (
-        '' if l == "EN" else
-        'AIサポート'
+        'YPP AI Assistant' if l == "EN" else
+        'YPP AI アシスタント'
     )
 
 def TITLE(l):
@@ -18,14 +18,14 @@ def TITLE(l):
 
 def SUBTITLE(l):
     return (
-        '' if l == "EN" else
-        '＊クリエーターサポートに書いている情報のみ答えられます。AIの情報を鵜呑みにせずに、左カラムの情報ソースのリンクを必ず確認して下さい。'
+        '☝ I can only answer information written in the Creator Support, which is public info. Please make sure to check the link to the information source in the left column and do not blindly accept AI-generated information.' if l == "EN" else
+        '☝ YouTubeクリエーターサポートに書いている情報のみ答えられます。AIの情報を鵜呑みにせずに、左カラムの情報ソースのリンクを必ず確認して下さい。'
     )
 
 def INPUT_HOLDER(l):
     return (
-        '' if l == "EN" else
-        'YouTubeに関する質問のみして下さい'
+        'Ask me a question about YouTube!  I will not remember previous conversations.' if l == "EN" else
+        'YouTubeに関する質問をして下さい。過去の会話は記憶しないことにご留意ください。'
     )
 
 def CLEAR_BUTTON(l):
@@ -36,7 +36,7 @@ def CLEAR_BUTTON(l):
 
 def SIDEBAR_SUBTITLE(l):
     return (
-        '' if l == "EN" else
+        '[ Resources ]' if l == "EN" else
         '[ 情報ソース ]'
     )
 
@@ -48,8 +48,8 @@ GEMINI_API_KEY = 'GEMINI_API_KEY'
 GEMINI_MODEL_NAME = 'models/gemini-1.5-pro-latest'
 
 OPENAI_API_KEY = 'OPENAI_API_KEY'
-# GPT_MODEL_NAME = 'gpt-3.5-turbo'
-# LLM_TEMPERATURE = 0.4
+OPENAI_MODEL_NAME = 'gpt-4o'
+OPENAI_TEMP = 0.4
 
 LANGSMITH_API_KEY = 'LANGSMITH_API_KEY'
 
@@ -57,7 +57,7 @@ EMBEDDING_MODEL_NAME = 'text-embedding-3-large'
 EN_VECSTORE = 'data_en.chroma_db'
 JA_VECSTORE = 'data_ja.chroma_db'
 SEARCH_TYPE = 'similarity_score_threshold'
-K = 10
+K = 4
 FETCH_K = 15
 THRESH = 0.30
 
@@ -88,12 +88,12 @@ Here is the original question from user:
 
 
 HYDE_PROMPT = """###
-As an AI language model specializing in Hypothetical Document Embeddings (HyDE), your task is to transform queries from YouTube creators into clearer and more effective forms.
+As an AI language model specializing in Hypothetical Document Embeddings (HyDE), your task is to transform questions from YouTube creators into clearer and more effective forms.
 
 ###
 Instructions:
 Do NOT answer the question directly: instead, generate three sentences from the user's original question in {} as guided below.
-- For the first sentence: Reframe the query by formalizing any colloquial language or abbreviations to enhance clarity while preserving the original intent related to YouTube as much as possible.
+- For the first sentence: Reframe the question by formalizing any colloquial language or abbreviations to enhance clarity while preserving the original intent related to YouTube as much as possible.
 - For the second and third sentences: Provide a contextually relevant explanation or answer that leverages your understanding of YouTube's functionalities.
 
 ###
@@ -106,9 +106,10 @@ Notes:
 
 ###
 Example:
-input: Hey, can I change or edit thumbnails of my short videos?
+User's question: Hey, can I change or edit thumbnails of my short videos?
 your output (*You write only three sentences): Can I edit the thumbnails for my short videos on YouTube? Yes, you can customize and edit thumbnails for your short videos on YouTube, just like you would for regular videos. This can be done by uploading an image that best represents your short video and will help it stand out to your viewers.
 
+here is user's input:
 """
 
 

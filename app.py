@@ -5,10 +5,10 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import constants as K
 import streamlit as st
 import conversation_logic as logic
-
+from PIL import Image
 st.set_page_config(
      page_title = K.TAB_TITLE(K.lang),
-     page_icon = K.TAB_ICON,
+     page_icon = Image.open("./images/bear_icon_fabicon.jpeg"),
      layout = "wide",
      initial_sidebar_state = "expanded"
 )
@@ -26,10 +26,14 @@ st.markdown(K.CSS, unsafe_allow_html=True)
 st.title(K.TITLE(K.lang))
 st.write(K.SUBTITLE(K.lang))
 
+def setAvatar(role):
+    if role == "AI": return "./images/bear_icon_avator.jpeg"
+    else: return None
+
 # Display chat messages from history on app rerun
 if message_list != []:
     for message in message_list:
-        with st.chat_message(message["role"]):
+        with st.chat_message(message["role"],avatar=setAvatar(message["role"])):
             st.markdown(message["content"])
             # if message["role"] == "AI":
             #     st.button('docs履歴')
@@ -55,7 +59,7 @@ if input := st.chat_input(K.INPUT_HOLDER(K.lang), on_submit = delete_button):
     st.rerun()
 
 with st.sidebar:
-    st.write(K.SIDEBAR_SUBTITLE(K.lang))
+    st.subheader(K.SIDEBAR_SUBTITLE(K.lang))
     if "retrived_text" in ss:
         st.markdown(ss["retrived_text"])
 

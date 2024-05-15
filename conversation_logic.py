@@ -13,19 +13,25 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 import cohere
 from langchain_google_genai import GoogleGenerativeAI
+from langchain_openai.chat_models import ChatOpenAI
 
-co = cohere.Client(
-    os.getenv(K.COHERE_API_KEY)
-)
+# co = cohere.Client(
+#     os.getenv(K.COHERE_API_KEY)
+# )
 
 embeddings_model = OpenAIEmbeddings(
     model = K.EMBEDDING_MODEL_NAME,
     api_key = os.getenv(K.OPENAI_API_KEY)
 )
 
-llm = GoogleGenerativeAI(
+gemini = GoogleGenerativeAI(
     model = K.GEMINI_MODEL_NAME,
     google_api_key = os.getenv(K.GEMINI_API_KEY)
+)
+
+llm = ChatOpenAI(
+    model = K.OPENAI_MODEL_NAME ,
+    temperature = K.OPENAI_TEMP,
 )
 
 vectorstore = Chroma(
@@ -49,14 +55,22 @@ def invoke(inputText, store):
         "Japanese"
     )
 
-    response = co.chat(
-        model = K.COHERE_MODEL_NAME,
-        preamble = K.HYDE_PROMPT.format(language, language),
-        temperature = 0.3,
-        message = inputText,
-    )
+    # response = co.chat(
+    #     model = K.COHERE_MODEL_NAME,
+    #     preamble = K.HYDE_PROMPT.format(language, language),
+    #     temperature = 0.3,
+    #     message = inputText,
+    # )
 
-    query = response.text
+    prompt_qustion = K.HYDE_PROMPT.format(language, language) + inputText
+    print(prompt_qustion)
+
+    response = gemini.invoke(prompt_qustion)
+    query = response
+
+
+
+    # query = response.text
     print("\n-------------\n")
     print(query)
     print("\n-------------\n")
@@ -66,7 +80,6 @@ def invoke(inputText, store):
         # print(docs[i].page_content)
         print("\n-------------\n")
 
-    docs = docs[:4]
     qa_system_prompt = K.QA_PROMPT
 
     qa_prompt = ChatPromptTemplate.from_messages([
